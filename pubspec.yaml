@@ -1,0 +1,34 @@
+name: flutter_application_4
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  curved_labeled_navigation_bar: ^2.0.6
+  flutter_localizations:
+    sdk: flutter
+  dio: ^5.4.0
+  #flutter_secure_storage: ^9.0.0
+  font_awesome_flutter: ^10.12.0
+  flutter_secure_storage: ^10.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: almarai
+      fonts:
+        - asset: fonts/Almarai-Bold.ttf

@@ -1,0 +1,484 @@
+import 'package:flutter_application_4/models/common.dart';
+
+import 'clinic.dart';
+import 'specialty.dart';
+
+
+class Doctor {
+  final String phone;
+  final String fullName;
+  final String email;
+  final String bio;
+  final String eduCv;
+  final double rate;
+  final int experienceYears;
+  final String licenseNumber;
+  final String licenseIssuer;
+  final Clinic clinic;
+  final Specialty specialty;
+  final List<WorkSchedule> schedules;
+  final String? profileImage;
+
+  Doctor({
+    required this.phone,
+    required this.fullName,
+    required this.email,
+    required this.bio,
+    required this.eduCv,
+    required this.rate,
+    required this.experienceYears,
+    required this.licenseNumber,
+    required this.licenseIssuer,
+    required this.clinic,
+    required this.specialty,
+    required this.schedules,
+    this.profileImage,
+  });
+
+  factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
+        phone: json['phone'] ?? '',
+        fullName: json['full_name'] ?? '',
+        email: json['email'] ?? '',
+        bio: json['bio'] ?? '',
+        eduCv: json['edu_cv'] ?? '',
+        rate: (json['rate'] ?? 0).toDouble(),
+        experienceYears: json['experience_years'] ?? 0,
+        licenseNumber: json['license_number'] ?? '',
+        licenseIssuer: json['license_issuer'] ?? '',
+        clinic: Clinic.fromJson(json['clinic'] ?? {}),
+        specialty: Specialty.fromJson(json['specialty_rel'] ?? {}),
+        schedules: json['schedules'] != null
+            ? List<WorkSchedule>.from(
+                json['schedules'].map((x) => WorkSchedule.fromJson(x)))
+            : [],
+        profileImage: json['profile_image'],
+      );
+
+  Map<String, dynamic> toJson() => {
+        'phone': phone,
+        'full_name': fullName,
+        'email': email,
+        'bio': bio,
+        'edu_cv': eduCv,
+        'rate': rate,
+        'experience_years': experienceYears,
+        'license_number': licenseNumber,
+        'license_issuer': licenseIssuer,
+        'clinic': clinic.toJson(),
+        'specialty_rel': specialty.toJson(),
+        'schedules': schedules.map((x) => x.toJson()).toList(),
+        'profile_image': profileImage,
+      };
+}
+
+import 'package:flutter_application_4/models/appointment_type.dart';
+
+class Appointment {
+  String id;
+  String patientId;
+  String doctorId;
+  AppointmentType type;
+  DateTime dateTime;
+  String? notes; // يكتبها المريض
+
+  Appointment({
+    required this.id,
+    required this.patientId,
+    required this.doctorId,
+    required this.type,
+    required this.dateTime,
+    this.notes,
+  });
+}
+
+class AppointmentType {
+  String id;
+  String name; // Online / Clinic
+  String description;
+  double price;
+
+  AppointmentType({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.price,
+  });
+}
+
+class BookingRequest {
+  final String id;
+  final String doctorPhone;
+  final String patientPhone;
+  final String appointmentDate;
+  final String startTime;
+  final String endTime;
+  final String status;
+  final String? reason;
+
+  BookingRequest({
+    required this.id,
+    required this.doctorPhone,
+    required this.patientPhone,
+    required this.appointmentDate,
+    required this.startTime,
+    required this.endTime,
+    required this.status,
+    this.reason,
+  });
+
+  // هذا المصنع (Factory) هو الأهم لضمان عدم حدوث خطأ عند تحويل البيانات
+  factory BookingRequest.fromJson(Map<String, dynamic> json) {
+    return BookingRequest(
+      id: json['id'] ?? '',
+      doctorPhone: json['doctor_phone'] ?? '',
+      patientPhone: json['patient_phone'] ?? '',
+      appointmentDate: json['appointment_date'] ?? '',
+      startTime: json['start_time'] ?? '',
+      endTime: json['end_time'] ?? '',
+      status: json['status'] ?? 'pending',
+      reason: json['reason'],
+    );
+  }
+}
+
+class Clinic {
+  final String id;
+  final String name;
+  final String city;
+  final String address;
+  final String phone;
+  final String locationLink;
+
+  Clinic({
+    required this.id,
+    required this.name,
+    required this.city,
+    required this.address,
+    required this.phone,
+    required this.locationLink,
+  });
+
+  factory Clinic.fromJson(Map<String, dynamic> json) => Clinic(
+        id: json['id'] ?? '',
+        name: json['name'] ?? '',
+        city: json['city'] ?? '',
+        address: json['address'] ?? '',
+        phone: json['phone'] ?? '',
+        locationLink: json['location_link'] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'city': city,
+        'address': address,
+        'phone': phone,
+        'location_link': locationLink,
+      };
+}
+class WorkSchedule {
+  final String dayOfWeek;
+  final String startTime;
+  final String endTime;
+  final int sessionDuration;
+
+  WorkSchedule({
+    required this.dayOfWeek,
+    required this.startTime,
+    required this.endTime,
+    required this.sessionDuration,
+  });
+
+  factory WorkSchedule.fromJson(Map<String, dynamic> json) => WorkSchedule(
+        dayOfWeek: json['day_of_week'] ?? '',
+        startTime: json['start_time'] ?? '',
+        endTime: json['end_time'] ?? '',
+        sessionDuration: json['session_duration'] ?? 0,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'day_of_week': dayOfWeek,
+        'start_time': startTime,
+        'end_time': endTime,
+        'session_duration': sessionDuration,
+      };
+}
+
+class Patient {
+  String id;
+  String fullName;
+  String email;
+  String phone;
+  String gender;
+  DateTime? birthDate;
+  String? profileImage;
+
+  Patient({
+    required this.id,
+    required this.fullName,
+    required this.email,
+    required this.phone,
+    required this.gender,
+    this.birthDate,
+  
+    this.profileImage,
+  });
+
+  factory Patient.fromJson(Map<String, dynamic> json) => Patient(
+    id: json["id"],
+    fullName: json["full_name"],
+    email: json["email"],
+    phone: json["phone"],
+    gender: json["gender"],
+    birthDate: json["birth_date"] != null ? DateTime.parse(json["birth_date"]) : null,
+    profileImage: json["profile_image"],
+  );
+}
+class Specialty {
+  final String id;
+  final String name;
+  final String description;
+
+  Specialty({
+    required this.id,
+    required this.name,
+    required this.description,
+  });
+
+  factory Specialty.fromJson(Map<String, dynamic> json) => Specialty(
+        id: json['id'] ?? '',
+        name: json['name'] ?? '',
+        description: json['description'] ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+      };
+}
+
+import 'package:dio/dio.dart';
+import 'package:flutter_application_4/models/patient.dart';
+//import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dio_client.dart';
+
+class AuthService {
+  final Dio _dio = DioClient().instance;
+  final _storage = const FlutterSecureStorage();
+
+  Future<Patient?> fetchPatient() async {
+    try {
+      // final token = await _storage.read(key: 'token');
+      // if (token == null) throw Exception('No token found');
+
+      final response = await _dio.get(
+        '/patients/me', // ضع رابط الـ API الصحيح
+      );
+
+      return Patient.fromJson(response.data);
+    } catch (e) {
+      print('Error fetching patient: $e');
+      rethrow;
+    }
+  }
+
+  // تسجيل دخول
+  Future<Patient?> login(String phone, String password, String role) async {
+    try {
+      // الـ Login في FastAPI يتطلب إرسال البيانات كـ Form Data وليس JSON
+      // final formData = FormData.fromMap({
+      //   'phone': phone,
+      //   'password': password,
+      //   'role':role
+      // });
+
+      final response = await _dio.post(
+        '/auth/login',
+        queryParameters: {'phone': phone, 'password': password, 'role': role},
+      );
+
+      if (response.statusCode == 200) {
+        String token = response.data['access_token'];
+        String role = response.data['role'];
+
+        // حفظ التوكن والدور في الذاكرة الآمنة
+        await _storage.write(key: 'token', value: token);
+        await _storage.write(key: 'role', value: role);
+
+        final patient = await fetchPatient();
+        return patient;
+      }
+      return null;
+    } catch (e) {
+      print("Login Error: $e");
+      return null;
+    }
+  }
+
+  // تسجيل مريض جديد
+  Future<bool> registerPatient(Map<String, dynamic> patientData) async {
+    try {
+      final response = await _dio.post(
+        '/auth/register/patient',
+        data: patientData,
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+}
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_application_4/views/globals.dart';
+import 'package:flutter_application_4/views/login_view.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+class DioClient {
+  final Dio _dio = Dio(
+    
+    BaseOptions(
+      baseUrl: "http://localhost:8000/api/v1", // IP المحاكي
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      contentType: 'application/json',
+    ),
+  );
+
+  final _storage = const FlutterSecureStorage();
+
+  DioClient() {
+    // إضافة Interceptor لإرسال التوكن تلقائياً في كل طلب
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        String? token = await _storage.read(key: 'token');
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        return handler.next(options);
+      },
+      onError: (DioException e, handler) async {
+        // هنا يمكنك معالجة أخطاء 401 (انتهت الجلسة) وتوجيه المستخدم لتسجيل الدخول
+            if (e.response?.statusCode == 401) {
+        await FlutterSecureStorage().delete(key: 'token');
+
+        // استخدم navigatorKey بدل context
+        navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => LoginView()),
+          (route) => false,
+        );
+      }
+        return handler.next(e);
+      },
+    ));
+  }
+
+  Dio get instance => _dio;
+}
+import 'package:dio/dio.dart';
+import 'package:flutter_application_4/models/booking_request.dart';
+//import 'package:flutter_application_4/models/patient.dart';
+import '../models/doctor.dart';
+//import '../models/booking.dart'; // تأكد من اسم الملف لديك
+import 'dio_client.dart';
+
+class PatientService {
+  final Dio _dio = DioClient().instance;
+
+  // 1. جلب الأطباء (مع تحويل البيانات إلى Model)
+  Future<List<Doctor>> getDoctors({
+    String? city,
+    String? specialtyId,
+    double? minRating,
+  }) async {
+    try {
+      final response = await _dio.get(
+        '/doctors/doctors',
+        queryParameters: {
+          if (city != null) 'city': city,
+          if (minRating != null) 'minRating': minRating,
+          if (specialtyId != null)
+            'specialty_id': specialtyId, // التصفية بالـ ID أدق
+        },
+      );
+
+      // تحويل قائمة الـ JSON إلى قائمة من كائنات Doctor
+      return (response.data as List)
+          .map((doctorJson) => Doctor.fromJson(doctorJson))
+          .toList();
+    } catch (e) {
+      throw Exception("فشل جلب قائمة الأطباء: $e");
+    }
+  }
+
+  Future<BookingRequest> createBookingRequest({
+    required String doctorId,
+    required String doctorPhone,
+    required DateTime requestDate,
+    required DateTime appointmentDate,
+    required String startTime,
+    String? reason,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/bookings/requests',
+        data: {
+          'doctor_id': doctorId,
+          'doctor_phone': doctorPhone,
+          'request_date': requestDate.toIso8601String(),
+          'appointment_date': appointmentDate.toIso8601String().split('T')[0],
+          'start_time': startTime,
+          if (reason != null) 'reason': reason,
+        },
+      );
+
+      return BookingRequest.fromJson(response.data);
+    } on DioException catch (e) {
+      throw e.response?.data['detail'] ?? "حدث خطأ أثناء إنشاء الطلب";
+    }
+  }
+
+  // 3️⃣ جلب الطلبات الشخصية للمريض
+  Future<List<BookingRequest>> getMyRequests() async {
+    try {
+      final response = await _dio.get('/bookings/requests');
+      return (response.data as List)
+          .map((json) => BookingRequest.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception("فشل جلب طلبات الحجز");
+    }
+  }
+
+  // 4️⃣ (اختياري) إذا أردنا جلب طلبات الدكتور
+  Future<List<BookingRequest>> getDoctorRequests() async {
+    try {
+      final response = await _dio.get('/api/v1/patients/doctor/requests');
+      return (response.data as List)
+          .map((json) => BookingRequest.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception("فشل جلب طلبات الدكتور");
+    }
+  }
+}
+import 'package:dio/dio.dart';
+import '../models/specialty.dart';
+import './dio_client.dart';
+
+class SpecialtyService {
+  final Dio _dio = DioClient().instance;
+
+  Future<List<Specialty>> getSpecialties() async {
+    try {
+      final response = await _dio.get('/specialties/');
+      return (response.data as List)
+          .map((json) => Specialty.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('فشل جلب التخصصات');
+    }
+  }
+}
